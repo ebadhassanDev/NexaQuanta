@@ -1,4 +1,5 @@
 ﻿import React, { Component } from 'react';
+import axios from 'axios';
 
 export class AddProduct extends Component {
   constructor(props) {
@@ -13,7 +14,13 @@ export class AddProduct extends Component {
       loading: false,
       successMessage: '',
       errorMessage: '',
+      categoriesFromDb: [],
+      loadingCategories: true,
     };
+  }
+
+  componentDidMount() {
+    this.fetchCategories();
   }
 
   handleChange = (e) => {
@@ -25,7 +32,6 @@ export class AddProduct extends Component {
 
     const { name, price, description, category, quantity, imageUrl } = this.state;
 
-    // You can adjust this object based on your API model
     const productData = {
       name,
       price: parseFloat(price),
@@ -38,8 +44,7 @@ export class AddProduct extends Component {
     try {
       this.setState({ loading: true, successMessage: '', errorMessage: '' });
 
-      // Make API POST call
-      //await axios.post('/api/products', productData);
+      await axios.post('/api/product', productData);
 
       this.setState({
         name: '',
@@ -59,7 +64,18 @@ export class AddProduct extends Component {
   }
 
   render() {
-    const { name, price, description, category, quantity, imageUrl, loading, successMessage, errorMessage } = this.state;
+    const {
+      name, price, description, category, quantity, imageUrl,
+      loading, successMessage, errorMessage, categoriesFromDb, loadingCategories
+    } = this.state;
+
+    // Static categories
+    const staticCategories = [
+      'Electronics',
+      'Clothing',
+      'Books',
+      'Home'
+    ];
 
     return (
       <div className="form-container mt-4">
@@ -112,19 +128,33 @@ export class AddProduct extends Component {
 
                 <div className="mb-3">
                   <label className="form-label">Category</label>
-                  <select
-                    className="form-select"
-                    name="category"
-                    value={category}
-                    onChange={this.handleChange}
-                    required
-                  >
-                    <option value="">Select a category</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Clothing">Clothing</option>
-                    <option value="Books">Books</option>
-                    <option value="Home">Home</option>
-                  </select>
+                  {loadingCategories ? (
+                    <p>Loading categories...</p>
+                  ) : (
+                    <select
+                      className="form-select"
+                      name="category"
+                      value={category}
+                      onChange={this.handleChange}
+                      required
+                    >
+                      <option value="">Select a category</option>
+
+                      {/* Static categories */}
+                      {staticCategories.map((cat, index) => (
+                        <option key={`static-${index}`} value={cat}>
+                          {cat}
+                        </option>
+                      ))}
+
+                      {/* Dynamic categories */}
+                      {categoriesFromDb.map((cat) => (
+                        <option key={`db-${cat.id}`} value={cat.name}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
                 <div className="mb-3">
@@ -157,8 +187,6 @@ export class AddProduct extends Component {
           </div>
         </div>
       </div>
-
-
     );
   }
 }

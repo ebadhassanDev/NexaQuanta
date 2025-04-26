@@ -1,6 +1,5 @@
 import { AddProduct } from "./components/AddProduct";
 import { Counter } from "./components/Counter";
-import { FetchData } from "./components/FetchData";
 import { Home } from "./components/Home";
 import ProductList from "./components/product-list";
 
@@ -12,10 +11,6 @@ const AppRoutes = [
   {
     path: '/counter',
     element: <Counter />
-  },
-  {
-    path: '/fetch-data',
-    element: <FetchData />
   },
   {
     path: 'add-product',

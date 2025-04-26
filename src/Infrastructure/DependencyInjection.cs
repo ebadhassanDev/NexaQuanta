@@ -15,7 +15,7 @@ public static class DependencyInjection
 {
     public static void AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
-        var connectionString = builder.Configuration.GetConnectionString("NexaQuantaDb");
+        var connectionString = builder.Configuration.GetConnectionString("NexaQuanta");
         Guard.Against.Null(connectionString, message: "Connection string 'NexaQuantaDb' not found.");
 
         builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();

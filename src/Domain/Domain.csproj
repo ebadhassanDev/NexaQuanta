@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" />
     <PackageReference Include="MediatR" />
+    <PackageReference Include="System.Data.SqlClient" />
   </ItemGroup>
 
 </Project>

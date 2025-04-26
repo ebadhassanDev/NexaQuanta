@@ -1,59 +1,41 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { AddProduct } from './AddProduct'; // Assuming AddProduct is in the same folder
+import axios from 'axios';
+import { AddProduct } from './AddProduct';
 
 const ProductList = () => {
-  const [products, setProducts] = useState([]); // For storing products
-  const [loading, setLoading] = useState(true); // For loading state
-  const [error, setError] = useState(null); // For error state
-  const [showModal, setShowModal] = useState(false); // For modal visibility state
-
-  // Fetch products from API when the component mounts
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   useEffect(() => {
-    // Simulating an API call with a timeout (replace with actual API call)
-    setTimeout(() => {
-      const fetchedProducts = [
-        {
-          id: 1,
-          name: 'Product 1',
-          price: 100,
-          dateAdded: '2025-04-01',
-          quantity: 10,
-          description: 'Description of Product 1',
-          imageUrl: 'https://placekitten.com/150/150'
-        },
-        {
-          id: 2,
-          name: 'Product 2',
-          price: 200,
-          dateAdded: '2025-04-02',
-          quantity: 15,
-          description: 'Description of Product 2',
-          imageUrl: 'https://via.placeholder.com/150'
-        },
-        {
-          id: 3,
-          name: 'Product 3',
-          price: 300,
-          dateAdded: '2025-04-03',
-          quantity: 20,
-          description: 'Description of Product 3',
-          imageUrl: 'https://via.placeholder.com/150'
-        }
-      ];
-      setProducts(fetchedProducts);
-      setLoading(false);
-    }, 2000);
+    fetchProducts();
   }, []);
 
-  // Toggle the modal visibility
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get('/api/product');
+      setProducts(response.data);
+    } catch (err) {
+      console.error('Error fetching products:', err);
+      setError('Failed to fetch products.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleModal = () => {
     setShowModal(!showModal);
   };
 
-  // Handle delete (dummy function)
-  const handleDelete = (productId) => {
+  const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
-      setProducts(products.filter((product) => product.id !== productId));
+      try {
+        await axios.delete(`/api/product/${productId}`);
+        setProducts(products.filter((product) => product.id !== productId));
+      } catch (err) {
+        console.error('Error deleting product:', err);
+        setError('Failed to delete product.');
+      }
     }
   };
 
@@ -62,7 +44,7 @@ const ProductList = () => {
   }
 
   if (error) {
-    return <div>{error}</div>;
+    return <div className="alert alert-danger">{error}</div>;
   }
 
   return (
@@ -70,7 +52,6 @@ const ProductList = () => {
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2>Product List</h2>
 
-        {/* Add product button */}
         <div className="mb-4">
           <button className="btn btn-primary" onClick={toggleModal}>
             Add New Product
@@ -108,12 +89,11 @@ const ProductList = () => {
         </div>
       )}
 
-
       {/* Background overlay */}
       {showModal && (
         <div
           className="modal-backdrop fade show"
-          onClick={toggleModal} // Close modal if backdrop is clicked
+          onClick={toggleModal}
         ></div>
       )}
 
@@ -132,22 +112,28 @@ const ProductList = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td>{product.name}</td>
-                <td>${product.price}</td>
-                <td>{new Date(product.dateAdded).toLocaleDateString()}</td>
-                <td>{product.quantity}</td>
-                <td>{product.description}</td>
-                <td>
-                  <img src={product.imageUrl} alt={product.name} width="50" />
-                </td>
-                <td className="d-flex gap-1">
-                  <button className="btn btn-warning btn-sm mr-2">Edit</button>
-                  <button className="btn btn-danger btn-sm">Delete</button>
-                </td>
+            {products.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="text-center">No products found.</td>
               </tr>
-            ))}
+            ) : (
+              products.map((product) => (
+                <tr key={product.id}>
+                  <td>{product.name}</td>
+                  <td>${product.price}</td>
+                  <td>{new Date(product.dateAdded).toLocaleDateString()}</td>
+                  <td>{product.quantity}</td>
+                  <td>{product.description}</td>
+                  <td>
+                    <img src={product.imageUrl} alt={product.name} width="50" />
+                  </td>
+                  <td className="d-flex gap-1">
+                    <button className="btn btn-warning btn-sm mr-2">Edit</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(product.id)}>Delete</button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

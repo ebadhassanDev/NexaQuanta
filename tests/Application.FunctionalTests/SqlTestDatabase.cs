@@ -21,7 +21,7 @@ public class SqlTestDatabase : ITestDatabase
             .AddEnvironmentVariables()
             .Build();
 
-        var connectionString = configuration.GetConnectionString("NexaQuantaDb");
+        var connectionString = configuration.GetConnectionString("NexaQuanta");
 
         Guard.Against.Null(connectionString);
 

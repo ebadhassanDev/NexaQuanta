@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { AddProduct } from './AddProduct'; // Make sure this path is correct
+import { AddProduct } from './AddProduct';
 import ProductList from './product-list';
 
 export class Home extends Component {
@@ -8,7 +8,7 @@ export class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedPage: 'dashboard', // default page
+      selectedPage: 'dashboard',
     };
   }
 
@@ -104,11 +104,7 @@ export class Home extends Component {
   render() {
     return (
       <div className="container-fluid">
-        {/* Main Content */}
         <main className="col-md-12 px-md-4">
-          {/* Navigation or Menu */}
-
-          {/* Render the selected page */}
           {this.renderContent()}
         </main>
       </div>
